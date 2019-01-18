@@ -41,9 +41,9 @@ def run(dbname="flavor_bible.db"):
         pairing_strength INTEGER,
         search_term VARCHAR,
         pairing_pk INTEGER,
-        self_pk INTEGER,
+        own_parent_pk INTEGER,
         FOREIGN KEY(pairing_pk) REFERENCES parent_ingredients(pk),
-        FOREIGN KEY(self_pk) REFERENCES parent_ingredients(pk)
+        FOREIGN KEY(own_parent_pk) REFERENCES parent_ingredients(pk)
         );"""
     
     CUR.execute(SQL)

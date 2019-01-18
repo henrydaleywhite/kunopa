@@ -28,7 +28,7 @@ def run(dbname="flavor_bible.db"):
                 pairing_strength,
                 search_term,
                 pairing_pk,
-                self_pk
+                own_parent_pk
             )
                 VALUES (?, ?, ?, ?, ?); """
 
@@ -36,7 +36,7 @@ def run(dbname="flavor_bible.db"):
     MAP_SQL = """SELECT pk FROM parent_ingredients WHERE name = ?;"""
 
     UPDATE_MAP_SQL = """UPDATE child_ingredients 
-                    SET self_pk = ? WHERE name = ?;"""
+                    SET own_parent_pk = ? WHERE name = ?;"""
 
     # importing the raw data json file created through a scrape of TFB html
     dcty = parse.load_dictionary(full_file)
@@ -76,7 +76,7 @@ def run(dbname="flavor_bible.db"):
             parent_search_dcty[key])
         cur.execute(PARENT_SQL, par_sql_values)
 
-        # populate all values in child_ingredients table except self_pk
+        # populate all values in child_ingredients table except own_parent_pk
         # for each key in parent, iterate through list of dicts in child
         for child_ingred in dcty[key]['children']:
             # second layer of iteration to go through each key, val pair
@@ -88,13 +88,13 @@ def run(dbname="flavor_bible.db"):
         
         i += 1
 
-    # create a mapping table for self_pk column
+    # create a mapping table for own_parent_pk column
     for item in unique_self_refs:
         cur.execute(MAP_SQL, (item,))
         result = cur.fetchone()[0]
         mapping_table[item] = result
     
-    # populate self_pk on child_ingredients table using mapping table
+    # populate own_parent_pk on child_ingredients table using mapping table
     for key in child_search_dcty_keys:
         key_to_append = mapping_table[child_search_dcty[key][0]]
         child_search_dcty[key].append(key_to_append)
