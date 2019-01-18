@@ -31,7 +31,7 @@ class ParentIngredient:
         """get the list of paired ingredients for the parent"""
         with OpenCursor() as cur:
             SQL = """ SELECT * FROM child_ingredients 
-                WHERE pairing_pk = ? ORDER BY pairing_strength; """
+                WHERE pairing_pk = ? ORDER BY pairing_strength DESC; """
             cur.execute(SQL, (self.pk,))
             rows = cur.fetchall()
         return [ChildIngredient(row) for row in rows]
