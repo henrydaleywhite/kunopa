@@ -1,3 +1,5 @@
+from statistics import mean
+
 import opencursor
 from opencursor import OpenCursor
 
@@ -63,10 +65,23 @@ class ParentIngredient:
 
     def update_weightings(self, list_latest_children, ingred_number):
         """update the 'ingredient_weightings' dictionary by appending new
+        values to existing value lists or inserting new key:value pair(s).
+        Averages in the case that populating the weighting dict returns
+        more values than expected and then adds 0 values where previously
+        existing dict keys did not appear in the latest child ingredient
+        """
+        # add values from latest child list
+        self.populate_weight_dict(list_latest_children, ingred_number)
+        # check added values for duplicates
+        self.average_duplicate_parent_pks(ingred_number)
+        # add 0's for values not in latest child list
+        self.populate_missing_ingredients(ingred_number)
+
+
+    def populate_weight_dict(self, list_latest_children, ingred_number):
+        """update the 'ingredient_weightings' dictionary by appending new
         values to existing value lists or inserting new key:value pair(s)
         """
-        # TODO build in a check for duplicate par_pk values in a child ingredient set, average if multiple exist
-        # TODO remove/exclude par_pk from the dict if the ingredient has already been selected (list of parent table pk values used already)
         for child_ingredient in list_latest_children:
             par_pk = child_ingredient.get_column_from_child('own_parent_pk')
             p_str = child_ingredient.get_column_from_child('pairing_strength')
@@ -90,7 +105,28 @@ class ParentIngredient:
                         value_list.append(0)
                     value_list.append(p_str)
                     ingredient_weightings[par_pk] = value_list
-        # if an ingredient is not in current parents children, add a 0 to list
+
+
+    def average_duplicate_parent_pks(self, ingred_number):
+        """if there are duplicate values for own_parent_pk
+        in the latest child list, average the scores"""
+        for value in ingredient_weightings.values():
+            # only run if there are more ingredients than expected
+            if len(value) > ingred_number:
+                temp_value_list = []
+                # create a list of all of the values to be averaged
+                for i in range(ingred_number - 1,len(value)):
+                    temp_value_list.append(value[i])
+                average_value = mean(temp_value_list)
+                # remove all extra values
+                while len(value) > ingred_number:
+                    value.pop()
+                # reassign the last value to the calculated average
+                value[-1] = average_value
+
+
+    def populate_missing_ingredients(self, ingred_number):
+        """add 0's to lists where ingredient was not listed as a pairing"""
         for value in ingredient_weightings.values():
             while len(value) < ingred_number:
                 value.append(0)
@@ -101,7 +137,7 @@ class ParentIngredient:
         ingredient_weightings dictionary to the selected_ingredients list
         """
         par_pk = child_instance.get_column_from_child('own_parent_pk')
-        ingredient_weightings.pop(par_pk)
+        del ingredient_weightings[par_pk]
         selected_ingredients.append(par_pk)
 
 
