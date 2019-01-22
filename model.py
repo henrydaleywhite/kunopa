@@ -47,12 +47,12 @@ class ParentIngredient:
     def update_weightings(self, list_latest_children, ingred_number):
         """update the 'ingredient_weightings' dictionary by appending new
         values to existing value lists or inserting new key:value pair(s)"""
+        # TODO build in a check for duplicate par_pk values in a child ingredient set, average if multiple exist
+        # TODO remove/exclude par_pk from the dict if the ingredient has already been selected (list of parent table pk values used already)
         for child_ingredient in list_latest_children:
             par_pk = child_ingredient.get_column_from_child('own_parent_pk')
             p_str = child_ingredient.get_column_from_child('pairing_strength')
             # if key already exists in dict
-            # TODO build in a check for duplicate par_pk values in a child ingredient set, average if multiple exist
-            # TODO remove/exclude par_pk from the dict if the ingredient has already been selected (list of parent table pk values used already)
             if par_pk in ingredient_weightings:
                 cur_val_list = ingredient_weightings[par_pk]
                 # if all list values are already populated

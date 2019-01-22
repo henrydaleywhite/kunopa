@@ -132,18 +132,18 @@ def line_list_to_dcty():
             if subingred_split[0].isupper():
                 # uppercase text starting with '*' character is strongest
                 if subingred_text[0] == "*":
-                    children.append({subingred_text.lower()[1::] : 4})
+                    children.append({subingred_text.lower()[1::] : 100})
                 # uppercase text without '*' character is second strongest
                 else:
-                    children.append({subingred_text.lower() : 3})
+                    children.append({subingred_text.lower() : 80})
             else:
                 # lowercase bolded text is third strongest
                 str_line_info = str(raw_subingred_text[j])
                 if str_line_info.find('calibre3') > -1:
-                    children.append({subingred_text.lower() : 2})
+                    children.append({subingred_text.lower() : 60})
                 # lowercase unbolded text is weakest
                 else:
-                    children.append({subingred_text.lower() : 1})
+                    children.append({subingred_text.lower() : 40})
         
         # insert parent ingredient key with child ingredient values
         ingredient_dcty[parent_ingred.lower()] = {
