@@ -16,6 +16,9 @@ def get_api_key(filename):
 
 
 def format_ingred_list(ing_list):
+    """convert a list of ingredients into a string with
+    expected api format of '%2' between search terms
+    """
     return_str = ""
     for ingredient in ing_list:
         if ing_list.index(ingredient) == 0:
@@ -26,6 +29,9 @@ def format_ingred_list(ing_list):
 
 
 def api_call(api_key, ing_list, num_results):
+    """return a dictionary result based on an api call with dynamic
+    values for the ingredient list and number of results to display
+    """
     stc_1 = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/"
     stc_2 = "recipes/findByIngredients?fillIngredients=true&ingredients="
     stc_3 = "&limitLicense=false&number="
