@@ -24,6 +24,9 @@ def get_base_ingredient_list():
 
 
 def get_current_ingredient_list():
+    """get the current list of ingredients that can be selected
+    with their respective pairing/recommendation scores
+    """
     display_dict = {}
     for key, value in ingredient_weightings.items():
         display_dict[key] = mean(value)
