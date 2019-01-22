@@ -52,6 +52,7 @@ class ParentIngredient:
             p_str = child_ingredient.get_column_from_child('pairing_strength')
             # if key already exists in dict
             # TODO build in a check for duplicate par_pk values in a child ingredient set, average if multiple exist
+            # TODO remove/exclude par_pk from the dict if the ingredient has already been selected (list of parent table pk values used already)
             if par_pk in ingredient_weightings:
                 cur_val_list = ingredient_weightings[par_pk]
                 # if all list values are already populated
@@ -109,7 +110,7 @@ class ChildIngredient:
         # self.pk = row.get('pk')        # self.name = row.get('name')        # self.pairing_strength = row.get('pairing_strength')        # self.search_term = row.get('search_term')        # self.pairing_pk = row.get('pairing_pk')        # self.own_parent_pk = row.get('own_parent_pk')
 
 
-    def get_parent_for_child(self):
+    def get_parent(self):
         """return an instance of the ParentIngredient class for the current
         child ingredient's own_parent_pk column"""
         with OpenCursor() as cur:
