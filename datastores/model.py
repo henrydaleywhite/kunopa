@@ -48,16 +48,26 @@ class ParentIngredient:
         """update the 'ingredient_weightings' dictionary by appending new
         values to existing value lists or inserting new key:value pair(s)"""
         for child_ingredient in list_latest_children:
-            parent_pk = child_ingredient.get_column_for_child('own_parent_pk')
-            p_str = child_ingredient.get_column_for_child('pairing_strength')
-            if parent_pk in ingredient_weightings:
-                ingredient_weightings[parent_pk].append(p_str)
+            par_pk = child_ingredient.get_column_from_child('own_parent_pk')
+            p_str = child_ingredient.get_column_from_child('pairing_strength')
+            # if key already exists in dict
+            if par_pk in ingredient_weightings:
+                cur_val_list = ingredient_weightings[par_pk]
+                # if all list values are already populated
+                if len(cur_val_list) == ingred_number - 1:
+                    cur_val_list.append(p_str)
+                else:
+                    # add 0 values to value list if missing any
+                    while len(cur_val_list) < ingred_number - 1:
+                        cur_val_list.append(0)
+                    cur_val_list.append(p_str)
+            # if key DNE, add 0 values until n - 1 and then add pair strength
             else:
                 value_list = []
                 for i in range(ingred_number - 1):
                     value_list.append(0)
                 value_list.append(p_str)
-                ingredient_weightings[parent_pk] = value_list
+                ingredient_weightings[par_pk] = value_list
 
 
     def __bool__(self):
