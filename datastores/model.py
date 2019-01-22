@@ -34,7 +34,7 @@ class ParentIngredient:
         # self.pk = row.get('pk')        # self.name = row.get('name')        # self.season = row.get('season')        # self.taste = row.get('taste')        # self.function = row.get('function')        # self.botanical_relatives = row.get('botanical_relatives')        # self.weight = row.get('weight')        # self.volume = row.get('volume')        # self.techniques = row.get('techniques')        # self.tips = row.get('tips')        # self.search_term = row.get('search_term')
 
 
-    def get_children_of_parent(self):
+    def get_children(self):
         """get the list of paired ingredients for the parent"""
         with OpenCursor() as cur:
             SQL = """ SELECT * FROM child_ingredients 
@@ -51,6 +51,7 @@ class ParentIngredient:
             par_pk = child_ingredient.get_column_from_child('own_parent_pk')
             p_str = child_ingredient.get_column_from_child('pairing_strength')
             # if key already exists in dict
+            # TODO build in a check for duplicate par_pk values in a child ingredient set, average if multiple exist
             if par_pk in ingredient_weightings:
                 cur_val_list = ingredient_weightings[par_pk]
                 # if all list values are already populated
@@ -68,6 +69,10 @@ class ParentIngredient:
                     value_list.append(0)
                 value_list.append(p_str)
                 ingredient_weightings[par_pk] = value_list
+        # if an ingredient is not in current parents children, add a 0 to list
+        for value in ingredient_weightings.values():
+            while len(value) < ingred_number:
+                value.append(0)
 
 
     def __bool__(self):
