@@ -11,7 +11,7 @@ selected_ingredients = []
 ingredient_number = 1
 
 
-def get_full_ingredient_list():
+def get_base_ingredient_list():
     """function to be run to generate list of parents to be selected for
     first ingredient. Returns a list of ParentIngredient class instances
     """
@@ -20,6 +20,13 @@ def get_full_ingredient_list():
         cur.execute(SQL)
         rows = cur.fetchall()
     return [ParentIngredient(row) for row in rows]
+
+
+def get_current_ingredient_list():
+    display_dict = {}
+    for key, value in ingredient_weightings.items():
+        display_dict[key] = mean(value)
+    return display_dict
 
 
 class ParentIngredient:
@@ -110,19 +117,19 @@ class ParentIngredient:
     def average_duplicate_parent_pks(self, ingred_number):
         """if there are duplicate values for own_parent_pk
         in the latest child list, average the scores"""
-        for value in ingredient_weightings.values():
+        for weights in ingredient_weightings.values():
+            size = len(weights)
             # only run if there are more ingredients than expected
-            if len(value) > ingred_number:
+            if size > ingred_number:
                 temp_value_list = []
                 # create a list of all of the values to be averaged
-                for i in range(ingred_number - 1,len(value)):
-                    temp_value_list.append(value[i])
+                for i in range(ingred_number - 1, size):
+                    temp_value_list.append(weights[i])
                 average_value = mean(temp_value_list)
                 # remove all extra values
-                while len(value) > ingred_number:
-                    value.pop()
+                del weights[ingred_number:size + 1]
                 # reassign the last value to the calculated average
-                value[-1] = average_value
+                weights[-1] = average_value
 
 
     def populate_missing_ingredients(self, ingred_number):
@@ -148,6 +155,7 @@ class ParentIngredient:
     def __repr__(self):
         output = "PK: {}, Name: {}"
         return output.format(self.pk, self.name)
+
 
 
 class ChildIngredient:
