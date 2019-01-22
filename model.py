@@ -7,7 +7,8 @@ from opencursor import OpenCursor
 ingredient_weightings = {}
 # list that will store the pk of ingredients on
 # the parent table that have been already selected
-selected_ingredients = []
+selected_ingredient_pks = []
+api_input = []
 ingredient_number = 1
 
 
@@ -93,7 +94,7 @@ class ParentIngredient:
             par_pk = child_ingredient.get_column_from_child('own_parent_pk')
             p_str = child_ingredient.get_column_from_child('pairing_strength')
             # if the ingredient has not previously been selected
-            if par_pk not in selected_ingredients:
+            if par_pk not in selected_ingredient_pks:
                 # if key already exists in dict
                 if par_pk in ingredient_weightings:
                     cur_val_list = ingredient_weightings[par_pk]
@@ -121,6 +122,7 @@ class ParentIngredient:
             size = len(weights)
             # only run if there are more ingredients than expected
             if size > ingred_number:
+                # TODO switch this to pop, mean, append
                 temp_value_list = []
                 # create a list of all of the values to be averaged
                 for i in range(ingred_number - 1, size):
@@ -145,7 +147,7 @@ class ParentIngredient:
         """
         par_pk = child_instance.get_column_from_child('own_parent_pk')
         del ingredient_weightings[par_pk]
-        selected_ingredients.append(par_pk)
+        selected_ingredient_pks.append(par_pk)
 
 
     def __bool__(self):
@@ -191,8 +193,11 @@ class ChildIngredient:
 
     def get_parent(self):
         """return an instance of the ParentIngredient class for the current
-        child ingredient's own_parent_pk column
+        child ingredient's own_parent_pk column and append the search term to
+        the list for the api call
         """
+        api_search_term = self.get_column_from_child('search_term')
+        api_input.append(api_search_term)
         with OpenCursor() as cur:
             SQL = """ SELECT * from parent_ingredients WHERE pk = ?; """
             cur.execute(SQL, (self.own_parent_pk,))
