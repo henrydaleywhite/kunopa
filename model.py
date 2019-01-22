@@ -3,6 +3,22 @@ from opencursor import OpenCursor
 
 # dictionary that will be used to store ingredient pairing info
 ingredient_weightings = {}
+# list that will store the pk of ingredients on
+# the parent table that have been already selected
+selected_ingredients = []
+ingredient_number = 1
+
+
+def get_full_ingredient_list():
+    """function to be run to generate list of parents to be selected for
+    first ingredient. Returns a list of ParentIngredient class instances
+    """
+    with OpenCursor() as cur:
+        SQL = """ SELECT * from parent_ingredients"""
+        cur.execute(SQL)
+        rows = cur.fetchall()
+    return [ParentIngredient(row) for row in rows]
+
 
 class ParentIngredient:
     """TODO docstring"""
@@ -27,7 +43,8 @@ class ParentIngredient:
 
     def _set_from_row(self, row):
         """iterate through sqlite3 row object and set all 
-        key:value pairings as attributes of the class instance"""
+        key:value pairings as attributes of the class instance
+        """
         row = dict(row)
         for key, value in row.items():
             setattr(self, key, value)
@@ -46,38 +63,55 @@ class ParentIngredient:
 
     def update_weightings(self, list_latest_children, ingred_number):
         """update the 'ingredient_weightings' dictionary by appending new
-        values to existing value lists or inserting new key:value pair(s)"""
+        values to existing value lists or inserting new key:value pair(s)
+        """
         # TODO build in a check for duplicate par_pk values in a child ingredient set, average if multiple exist
         # TODO remove/exclude par_pk from the dict if the ingredient has already been selected (list of parent table pk values used already)
         for child_ingredient in list_latest_children:
             par_pk = child_ingredient.get_column_from_child('own_parent_pk')
             p_str = child_ingredient.get_column_from_child('pairing_strength')
-            # if key already exists in dict
-            if par_pk in ingredient_weightings:
-                cur_val_list = ingredient_weightings[par_pk]
-                # if all list values are already populated
-                if len(cur_val_list) == ingred_number - 1:
-                    cur_val_list.append(p_str)
+            # if the ingredient has not previously been selected
+            if par_pk not in selected_ingredients:
+                # if key already exists in dict
+                if par_pk in ingredient_weightings:
+                    cur_val_list = ingredient_weightings[par_pk]
+                    # if all list values are already populated
+                    if len(cur_val_list) == ingred_number - 1:
+                        cur_val_list.append(p_str)
+                    else:
+                        # add 0 values to value list if missing any
+                        while len(cur_val_list) < ingred_number - 1:
+                            cur_val_list.append(0)
+                        cur_val_list.append(p_str)
+                # if key DNE, add 0 values until n - 1 and then add pair strength
                 else:
-                    # add 0 values to value list if missing any
-                    while len(cur_val_list) < ingred_number - 1:
-                        cur_val_list.append(0)
-                    cur_val_list.append(p_str)
-            # if key DNE, add 0 values until n - 1 and then add pair strength
-            else:
-                value_list = []
-                for i in range(ingred_number - 1):
-                    value_list.append(0)
-                value_list.append(p_str)
-                ingredient_weightings[par_pk] = value_list
+                    value_list = []
+                    for i in range(ingred_number - 1):
+                        value_list.append(0)
+                    value_list.append(p_str)
+                    ingredient_weightings[par_pk] = value_list
         # if an ingredient is not in current parents children, add a 0 to list
         for value in ingredient_weightings.values():
             while len(value) < ingred_number:
                 value.append(0)
 
 
+    def update_data_post_selection(self, child_instance):
+        """given a ChildIngredient instance, moves ingredient from the
+        ingredient_weightings dictionary to the selected_ingredients list
+        """
+        par_pk = child_instance.get_column_from_child('own_parent_pk')
+        ingredient_weightings.pop(par_pk)
+        selected_ingredients.append(par_pk)
+
+
     def __bool__(self):
         return bool(self.pk)
+
+
+    def __repr__(self):
+        output = "PK: {}, Name: {}"
+        return output.format(self.pk, self.name)
 
 
 class ChildIngredient:
@@ -103,7 +137,8 @@ class ChildIngredient:
 
     def _set_from_row(self, row):
         """iterate through sqlite3 row object and set all 
-        key:value pairings as attributes of the class instance"""
+        key:value pairings as attributes of the class instance
+        """
         row = dict(row)
         for key, value in row.items():
             setattr(self, key, value)
@@ -112,7 +147,8 @@ class ChildIngredient:
 
     def get_parent(self):
         """return an instance of the ParentIngredient class for the current
-        child ingredient's own_parent_pk column"""
+        child ingredient's own_parent_pk column
+        """
         with OpenCursor() as cur:
             SQL = """ SELECT * from parent_ingredients WHERE pk = ?; """
             cur.execute(SQL, (self.own_parent_pk,))
