@@ -1,7 +1,6 @@
 from statistics import mean
 
-import opencursor
-from opencursor import OpenCursor
+from .opencursor import OpenCursor
 
 # dictionary that will be used to store ingredient pairing info
 ingredient_weightings = {}
@@ -17,7 +16,7 @@ def get_base_ingredient_list():
     first ingredient. Returns a list of ParentIngredient class instances
     """
     with OpenCursor() as cur:
-        SQL = """ SELECT * from parent_ingredients"""
+        SQL = """ SELECT * from parent_ingredients order by name ASC"""
         cur.execute(SQL)
         rows = cur.fetchall()
     return [ParentIngredient(row) for row in rows]
