@@ -1,13 +1,14 @@
-from flask import Flask,render_template,request
+from flask import Flask
 
-from .controllers import controller
+from src.controllers.controller import controller
 
 
 app = Flask(__name__)
 
-middleware.register_blueprint(controller)
+app.register_blueprint(controller)
 
+app.secret_key = 'very secret1'
 
-@middleware.errorhandler(404)
+@app.errorhandler(404)
 def not_found(error):
     return render_template('404.html')
