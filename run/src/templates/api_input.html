@@ -1,0 +1,17 @@
+{% extends "structure.html" %}
+
+{% block viewport %}
+
+<div>
+    <form action="/api_input" method="post">
+        <input type="text" name="ing_1" placeholder="Input an ingredient...">
+        <input type="text" name="ing_2" placeholder="Input an ingredient...">
+        <input type="text" name="ing_3" placeholder="Input an ingredient...">
+        <input type="text" name="ing_4" placeholder="Input an ingredient...">
+        <input type="text" name="ing_5" placeholder="Input an ingredient...">
+        <input type="text" name="num_results" placeholder="Number of results to display...">
+        <input name="button" type="submit" value="Submit Ingredients">
+    </form>
+</div>
+
+{% endblock %}

@@ -16,7 +16,7 @@ def get_base_ingredient_list():
     first ingredient. Returns a list of ParentIngredient class instances
     """
     with OpenCursor() as cur:
-        SQL = """ SELECT * from parent_ingredients order by name ASC"""
+        SQL = """ SELECT * from parent_ingredients order by pk ASC"""
         cur.execute(SQL)
         rows = cur.fetchall()
     return [ParentIngredient(row) for row in rows]
@@ -157,9 +157,27 @@ class ParentIngredient:
 
 
     def __repr__(self):
-        output = "PK: {}, Name: {}"
-        return output.format(self.pk, self.name)
+        output = f'{self.pk}) {self.name}'
+        if self.season:
+            output += f' | Season: {self.season}'
+        if self.taste:
+            output += f' | Taste: {self.taste}'
+        if self.function:
+            output += f' | Function: {self.function}'
+        if self.botanical_relatives:
+            output += f' | Botanical Relatives: {self.botanical_relatives}'
+        if self.weight:
+            output += f' | Weight: {self.weight}'
+        if self.volume:
+            output += f' | Volume: {self.volume}'
+        if self.techniques:
+            output += f' | Techniques: {self.techniques}'
+        if self.tips:
+            output += f' | Tips: {self.tips}'
+        return output
 
+        
+        
 
 
 class ChildIngredient:

@@ -1,6 +1,6 @@
 from flask import Flask
 
-from src.controllers.controller import controller
+from .controllers.controller import controller
 
 
 app = Flask(__name__)

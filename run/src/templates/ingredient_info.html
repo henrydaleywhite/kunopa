@@ -1,0 +1,12 @@
+{% extends "structure.html" %}
+
+{% block viewport %}
+
+<div>
+    {% for ingredient in ingredients %}
+        <p>{{ingredient}}</p>
+        <p>---------------------------------------------------------------------------</p>
+    {% endfor %}
+</div>
+
+{% endblock %}
