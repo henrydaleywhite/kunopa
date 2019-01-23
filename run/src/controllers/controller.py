@@ -1,7 +1,7 @@
 from flask import Blueprint,redirect,render_template,request,session,url_for
 
 from ..models.spoonacular_api import *
-from ..models.model import get_base_ingredient_list, get_current_ingredient_list, ParentIngredient, ChildIngredient
+from ..models.model import *
 
 controller = Blueprint('main',__name__)
 
@@ -28,10 +28,26 @@ def frontpage():
 @controller.route('/ingredient_selection', methods=['GET','POST'])
 def ingredient_selection():
     if request.method == 'GET':
-        return session['app_use']
-        return render_template('ingredient_selection.html')
+        if 'num' in session.keys():
+            session['num'] += 1
+            if session['num'] == 2:
+                new_ingred = ParentIngredient(pk=session['pk'])
+            else:
+                new_ingred_child = ChildIngredient(pk=session['pk'])
+                new_ingred = new_ingred_child.get_parent()
+            to_update = new_ingred.get_children()
+            new_ingred.update_weightings(to_update, session['num'])
+            cur = get_selected_ingredient_list()
+            ingred = get_available_ingredient_list()
+        else:
+            session['num'] = 1
+            cur = []
+            ingred = get_base_ingredient_list()
+        return render_template('ingredient_selection.html',ingred=ingred,num=session['num'], cur=cur)
     elif request.method == 'POST':
-        pass
+        child_pk = request.form['button'].split()[1]
+        session['pk'] = child_pk
+        return redirect(url_for('main.ingredient_selection'))
 
 
 @controller.route('/api_input', methods=['GET','POST'])

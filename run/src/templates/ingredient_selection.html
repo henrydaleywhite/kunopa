@@ -1,0 +1,30 @@
+{% extends "structure.html" %}
+
+{% block viewport %}
+<p>{{cur}}</p>
+
+<p>Choose ingredient #{{num}}</p>
+<p>---------------------------------------------------------------------------</p>
+<div>
+    <form action="/ingredient_selection" method="post">
+        {% if num > 1 %}
+            {% for key, value in ingred.items() %}
+                <p>{{key}}</p>
+                <p>Pairing Strength: {{value}}</p>
+                
+                <input name="button" type="submit" value="Choose {{key}}">
+                <p>---------------------------------------------------------------------------</p>
+            {% endfor %}
+        {% else %}
+            {% for ingredient in ingred %}
+				<p>{{ingredient.name}}</p>
+				{% if num > 1 %}
+					<p>Pairing Strength: {{ingredient.pairing_strength}}</p>
+				{% endif %}
+				<input name="button" type="submit" value="Choose {{ingredient.pk}}">
+				<p>---------------------------------------------------------------------------</p>
+			{% endfor %}
+        {% endif %}
+    </form>
+</div>
+{% endblock %}

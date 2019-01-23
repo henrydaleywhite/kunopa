@@ -22,7 +22,7 @@ def get_base_ingredient_list():
     return [ParentIngredient(row) for row in rows]
 
 
-def get_current_ingredient_list():
+def get_available_ingredient_list():
     """get the current list of ingredients that can be selected
     with their respective pairing/recommendation scores
     """
@@ -32,20 +32,30 @@ def get_current_ingredient_list():
     return display_dict
 
 
+def get_selected_ingredient_list():
+    """get the current list of ingredients that have been selected"""
+    return api_input
+
+
+def increment_ingredient_number():
+    """get the next ingredient number based on the number of search terms"""
+    return len(api_input) + 1
+
+
 class ParentIngredient:
     """TODO docstring"""
-    def __init__(self, row={}, name=''):
-        if name:
-            self._set_from_credentials(name)
+    def __init__(self, row={}, pk=''):
+        if pk:
+            self._set_from_credentials(pk)
         else:
             self._set_from_row(row)
 
 
-    def _set_from_credentials(self, name):
+    def _set_from_credentials(self, pk):
         with OpenCursor() as cur:
             SQL = """ SELECT * FROM parent_ingredients 
-                WHERE name = ?; """
-            cur.execute(SQL, (name,))
+                WHERE pk = ?; """
+            cur.execute(SQL, (pk,))
             row = cur.fetchone()
         if row:
             self._set_from_row(row)
@@ -60,6 +70,8 @@ class ParentIngredient:
         row = dict(row)
         for key, value in row.items():
             setattr(self, key, value)
+        if api_input == []:
+            api_input.append(self.search_term)
         # self.pk = row.get('pk')        # self.name = row.get('name')        # self.season = row.get('season')        # self.taste = row.get('taste')        # self.function = row.get('function')        # self.botanical_relatives = row.get('botanical_relatives')        # self.weight = row.get('weight')        # self.volume = row.get('volume')        # self.techniques = row.get('techniques')        # self.tips = row.get('tips')        # self.search_term = row.get('search_term')
 
 
@@ -182,18 +194,18 @@ class ParentIngredient:
 
 class ChildIngredient:
     """TODO docstring"""
-    def __init__(self, row={}, name=''):
-        if name:
-            self._set_from_credentials(name)
+    def __init__(self, row={}, pk=''):
+        if pk:
+            self._set_from_credentials(pk)
         else:
             self._set_from_row(row)
 
 
-    def _set_from_credentials(self, name):
+    def _set_from_credentials(self, pk):
         with OpenCursor() as cur:
             SQL = """ SELECT * FROM child_ingredients 
-                WHERE name = ?; """
-            cur.execute(SQL, (name,))
+                WHERE pk = ?; """
+            cur.execute(SQL, (pk,))
             row = cur.fetchone()
         if row:
             self._set_from_row(row)
