@@ -41,7 +41,7 @@ def ingredient_selection():
             ingred = get_available_ingredient_list()
         else:
             session['num'] = 1
-            cur = []
+            cur = []    
             ingred = get_base_ingredient_list()
         return render_template('ingredient_selection.html',ingred=ingred,num=session['num'], cur=cur)
     elif request.method == 'POST':

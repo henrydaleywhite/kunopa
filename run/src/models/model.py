@@ -9,7 +9,10 @@ ingredient_weightings = {}
 selected_ingredient_pks = []
 api_input = []
 ingredient_number = 1
+full_selection = {}
 
+# TODO keep a running list of all possibilities on top of the list of all weights by parent
+# TODO use the own_parent_pk of the ingredient list against the ingredient_weightings dict to get the number
 
 def get_base_ingredient_list():
     """function to be run to generate list of parents to be selected for
@@ -26,6 +29,7 @@ def get_available_ingredient_list():
     """get the current list of ingredients that can be selected
     with their respective pairing/recommendation scores
     """
+    # TODO change the name of this function
     display_dict = {}
     for key, value in ingredient_weightings.items():
         display_dict[key] = mean(value)
