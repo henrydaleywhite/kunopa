@@ -10,11 +10,7 @@ def frontpage():
     if request.method == 'GET':
         clear_results()
         to_del = []
-        for key in session.keys():
-            to_del.append(key)
-        if to_del:
-            for item in to_del:
-                del session[item]
+        session.clear()
         return render_template('index.html')
     elif request.method == 'POST':
         if request.form['button'] == 'Full Application':
@@ -59,6 +55,8 @@ def ingredient_selection():
             session['api_ingred'] = get_selected_ingredient_list()
             session['num_results'] = 2
             return redirect(url_for('main.search_results'))
+        elif request.form['button'] == 'Back to Homepage':
+            return redirect(url_for('main.frontpage'))
         else:
             child_pk = request.form['button'].split()[1]
             session.pop('pk', None)
@@ -72,30 +70,42 @@ def api_search_input():
         # return session['app_use']
         return render_template('api_input.html')
     elif request.method == 'POST':
-        ingredient_inputs = ['ing_1', 'ing_2', 'ing_3', 'ing_4', 'ing_5']
-        search_terms = []
-        session['num_results'] = request.form['num_results']
-        for item in ingredient_inputs:
-            if request.form[item] != "":
-                search_terms.append(request.form[item])
-        session['api_ingred'] = format_ingred_list(search_terms)
-        return redirect(url_for('main.search_results'))
+        if request.form['button'] == 'Back to Homepage':
+            return redirect(url_for('main.frontpage'))
+        else:
+            ingredient_inputs = ['ing_1', 'ing_2', 'ing_3', 'ing_4', 'ing_5']
+            search_terms = []
+            session['num_results'] = request.form['num_results']
+            for item in ingredient_inputs:
+                if request.form[item] != "":
+                    search_terms.append(request.form[item])
+            session['api_ingred'] = format_ingred_list(search_terms)
+            return redirect(url_for('main.search_results'))
 
 
 @controller.route('/ingredient_info', methods=['GET','POST'])
 def ingredient_info():
-    ingredients = get_base_ingredient_list()
-    return render_template('ingredient_info.html', ingredients=ingredients)
+    if request.method == 'GET':
+        ingredients = get_base_ingredient_list()
+        return render_template('ingredient_info.html', ingredients=ingredients)
+    else:
+        if request.form['button'] == 'Back to Homepage':
+            return redirect(url_for('main.frontpage'))
 
 
 @controller.route('/results', methods=['GET','POST'])
 def search_results():
-    results_list = api_call(session['api_key'], session['api_ingred'], session['num_results'])
-    print(results_list)
-    return render_template('results.html', result=results_list)
-    # TODO parse resulting json to work with JINJA in an html file
-    return "endpoint"
-    # print_str = ""
-    # for element in session['api_ingred']:
-    #     print_str += element + ", "
-    # return print_str
+    if request.method == 'GET':
+        results_list = api_call(session['api_key'], session['api_ingred'], session['num_results'])
+        print(results_list)
+        return render_template('results.html', result=results_list)
+        # TODO parse resulting json to work with JINJA in an html file
+        # return "endpoint"
+        # print_str = ""
+        # for element in session['api_ingred']:
+        #     print_str += element + ", "
+        # return print_str
+    else:
+        if request.form['button'] == 'Back to Homepage':
+            return redirect(url_for('main.frontpage'))
+    
