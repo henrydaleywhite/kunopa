@@ -13,6 +13,16 @@ full_selection_lookup = {}
 full_selection = []
 
 
+def clear_results():
+    """reset all variables to initial values"""
+    ingredient_weightings = {}
+    selected_ingredient_pks = []
+    api_input = []
+    ingredient_number = 1
+    full_selection_lookup = {}
+    full_selection = []
+
+
 def populate_full_selection():
     """function to create a dictionary of all possible
     children while avoiding duplicate 'search term' values

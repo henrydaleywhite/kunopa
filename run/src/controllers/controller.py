@@ -8,6 +8,13 @@ controller = Blueprint('main',__name__)
 @controller.route('/', methods=['GET','POST'])
 def frontpage():
     if request.method == 'GET':
+        clear_results()
+        to_del = []
+        for key in session.keys():
+            to_del.append(key)
+        if to_del:
+            for item in to_del:
+                del session[item]
         return render_template('index.html')
     elif request.method == 'POST':
         if request.form['button'] == 'Full Application':
@@ -46,12 +53,17 @@ def ingredient_selection():
             cur = []
             ingred = get_base_ingredient_list()
             weights = ''
-        return render_template('ingredient_selection.html',ingred=ingred,num=session['num'], cur=cur, weights=weights)
+        return render_template('ingredient_selection.html',app_use=session['app_use'],ingred=ingred,num=session['num'], cur=cur, weights=weights)
     elif request.method == 'POST':
-        child_pk = request.form['button'].split()[1]
-        session.pop('pk', None)
-        session['pk'] = child_pk
-        return redirect(url_for('main.ingredient_selection'))
+        if request.form['button'] == 'API Search':
+            session['api_ingred'] = get_selected_ingredient_list()
+            session['num_results'] = 2
+            return redirect(url_for('main.search_results'))
+        else:
+            child_pk = request.form['button'].split()[1]
+            session.pop('pk', None)
+            session['pk'] = child_pk
+            return redirect(url_for('main.ingredient_selection'))
 
 
 @controller.route('/api_input', methods=['GET','POST'])
@@ -78,6 +90,12 @@ def ingredient_info():
 
 @controller.route('/results', methods=['GET','POST'])
 def search_results():
-    # results_dict = api_call(session['api_key'], session['api_ingred'], session['num_results'])
+    results_list = api_call(session['api_key'], session['api_ingred'], session['num_results'])
+    print(results_list)
+    return render_template('results.html', result=results_list)
     # TODO parse resulting json to work with JINJA in an html file
-    return 'results displayed here'
+    return "endpoint"
+    # print_str = ""
+    # for element in session['api_ingred']:
+    #     print_str += element + ", "
+    # return print_str

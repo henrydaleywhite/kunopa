@@ -2,7 +2,11 @@
 
 {% block viewport %}
 <p>{{cur}}</p>
-
+<form action="/ingredient_selection" method="post">
+    {% if app_use == "full" and num > 1 %}
+        <input name="button" type="submit" value="API Search">
+    {% endif %}
+</form>
 <p>Choose ingredient #{{num}}</p>
 <p>---------------------------------------------------------------------------</p>
 <div>
