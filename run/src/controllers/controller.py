@@ -36,16 +36,20 @@ def ingredient_selection():
                 new_ingred_child = ChildIngredient(pk=session['pk'])
                 new_ingred = new_ingred_child.get_parent()
             to_update = new_ingred.get_children()
-            new_ingred.update_weightings(to_update, session['num'])
+            populate_full_selection()
+            new_ingred.update_weightings(to_update, session['num']-1)
             cur = get_selected_ingredient_list()
+            weights = get_ingredient_weights()
             ingred = get_available_ingredient_list()
         else:
             session['num'] = 1
-            cur = []    
+            cur = []
             ingred = get_base_ingredient_list()
-        return render_template('ingredient_selection.html',ingred=ingred,num=session['num'], cur=cur)
+            weights = ''
+        return render_template('ingredient_selection.html',ingred=ingred,num=session['num'], cur=cur, weights=weights)
     elif request.method == 'POST':
         child_pk = request.form['button'].split()[1]
+        session.pop('pk', None)
         session['pk'] = child_pk
         return redirect(url_for('main.ingredient_selection'))
 

@@ -9,10 +9,27 @@ ingredient_weightings = {}
 selected_ingredient_pks = []
 api_input = []
 ingredient_number = 1
-full_selection = {}
+full_selection_lookup = {}
+full_selection = []
 
-# TODO keep a running list of all possibilities on top of the list of all weights by parent
-# TODO use the own_parent_pk of the ingredient list against the ingredient_weightings dict to get the number
+
+def populate_full_selection():
+    """function to create a dictionary of all possible
+    children while avoiding duplicate 'search term' values
+    """
+    # FIXME find a better way to do this
+    with OpenCursor() as cur:
+        question_marks = '?' * len(full_selection)
+        SQL = """SELECT pk, name, own_parent_pk
+                FROM child_ingredients
+                WHERE pk IN ({}) 
+                GROUP BY search_term""".format(','.join(question_marks))
+        cur.execute(SQL, (full_selection))
+        rows = cur.fetchall()
+        for row in rows:
+            full_selection_lookup[row['pk']] = [row['name'], 
+                                                row['own_parent_pk']]
+        
 
 def get_base_ingredient_list():
     """function to be run to generate list of parents to be selected for
@@ -25,14 +42,12 @@ def get_base_ingredient_list():
     return [ParentIngredient(row) for row in rows]
 
 
-def get_available_ingredient_list():
-    """get the current list of ingredients that can be selected
-    with their respective pairing/recommendation scores
-    """
-    # TODO change the name of this function
+def get_ingredient_weights():
+    """get the current list of ingredients/weights that can be selected"""
+    # TODO change the name/docstring of this function
     display_dict = {}
     for key, value in ingredient_weightings.items():
-        display_dict[key] = mean(value)
+        display_dict[key] = int(mean(value))
     return display_dict
 
 
@@ -44,6 +59,11 @@ def get_selected_ingredient_list():
 def increment_ingredient_number():
     """get the next ingredient number based on the number of search terms"""
     return len(api_input) + 1
+
+
+def get_available_ingredient_list():
+    """get the dict of child ingredients that can currently be selected"""
+    return full_selection_lookup
 
 
 class ParentIngredient:
@@ -65,6 +85,8 @@ class ParentIngredient:
             self._set_from_row(row)
         else:
             self._set_from_row({})
+        if api_input == []:
+                api_input.append(self.search_term)
 
 
     def _set_from_row(self, row):
@@ -74,8 +96,7 @@ class ParentIngredient:
         row = dict(row)
         for key, value in row.items():
             setattr(self, key, value)
-        if api_input == []:
-            api_input.append(self.search_term)
+        # FIXME the two lines below this
         # self.pk = row.get('pk')        # self.name = row.get('name')        # self.season = row.get('season')        # self.taste = row.get('taste')        # self.function = row.get('function')        # self.botanical_relatives = row.get('botanical_relatives')        # self.weight = row.get('weight')        # self.volume = row.get('volume')        # self.techniques = row.get('techniques')        # self.tips = row.get('tips')        # self.search_term = row.get('search_term')
 
 
@@ -86,6 +107,9 @@ class ParentIngredient:
                 WHERE pairing_pk = ? ORDER BY pairing_strength DESC; """
             cur.execute(SQL, (self.pk,))
             rows = cur.fetchall()
+            # maintain list of all available pks for future selections
+            for row in rows:
+                full_selection.append(row['pk'])
         return [ChildIngredient(row) for row in rows]
 
 
