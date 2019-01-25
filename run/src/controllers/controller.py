@@ -96,7 +96,10 @@ def ingredient_info():
 @controller.route('/results', methods=['GET','POST'])
 def search_results():
     if request.method == 'GET':
-        results_list = api_call(session['api_key'], session['api_ingred'], session['num_results'])
+        api_key = session['api_key']
+        ingredients = session['api_ingred']
+        num_results = session['num_results']
+        results_list = api_call(api_key, ingredients, num_results)
         print(results_list)
         return render_template('results.html', result=results_list)
         # TODO parse resulting json to work with JINJA in an html file
