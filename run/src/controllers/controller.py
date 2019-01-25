@@ -112,3 +112,7 @@ def search_results():
         if request.form['button'] == 'Back to Homepage':
             return redirect(url_for('main.frontpage'))
     
+    
+@controller.route('/about')
+def about():
+    pass

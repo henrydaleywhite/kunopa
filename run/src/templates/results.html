@@ -1,12 +1,14 @@
 {% extends "structure.html" %}
 
 {% block viewport %}
-<form action="/results" method="post">
-    <input name="button" type="submit" value="Back to Homepage">
-</form>
-<p>---------------------------------------------------------------------------</p>
-    {% for item in result %}
-        <p>{{item}}</p>
-        <p>---------------------------------------------------------------------------</p>
+<div>
+    <form action="/results" method="post">
+        <input name="button" type="submit" value="Back to Homepage">
+    </form>
+    <p>---------------------------------------------------------------------------</p>
+        {% for item in result %}
+            <p>{{item}}</p>
+            <p>---------------------------------------------------------------------------</p>
     {% endfor %}
+</div>
 {% endblock %}

@@ -1,18 +1,90 @@
 {% extends "structure.html" %}
 
 {% block viewport %}
-    <div>
-        <form action="/" method="post">
-            <input name="button" type="submit" value="Full Application">
-        </form>
-        <form action="/" method="post">
-            <input name="button" type="submit" value="Ingredient Selection Only">
-        </form>
-        <form action="/" method="post">
-            <input name="button" type="submit" value="API Only">
-        </form>
-        <form action="/" method="post">
-            <input name="button" type="submit" value="View Ingredient Information">
-        </form>
-    </div>
+
+<style>
+div.title {
+    text-align: center;
+    margin-top: 150px;
+    margin-bottom: 0px;
+    float: center
+}
+table, th, td {
+    margin: 0px auto;
+    width: 60%;
+    border-collapse: collapse;
+    border-style: hidden;
+}
+th {
+    text-align: center;
+    height: 50px;
+    width: 25%;
+}
+td {
+    height: 50px;
+    width: 25%;
+    text-align: center;
+    font: 15px arial, sans-serif;
+}
+.button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+}
+h1 {
+    font-size: 50px;
+}
+</style>
+<div class="title">
+    <img type="image" src="{{ url_for('static', filename='foodbox.png') }}" alt="Header" style="max-width: 60%; max-height:auto">
+</div>
+<div>
+    <table> 
+        <tr>
+            <th>
+                <form action="/" method="post">
+                    <input name="button" class="button" type="submit" value="Full Application">
+                </form>
+            </th>
+            <th>
+                <form action="/" method="post">
+                    <input name="button" class="button" type="submit" value="Ingredient Selection Only">
+                </form>
+            </th>
+            <th>
+                <form action="/" method="post">
+                    <input name="button" class="button" type="submit" value="API Only">
+                </form>
+            </th>
+            <th>
+                <form action="/" method="post">
+                    <input name="button" class="button" type="submit" value="View Ingredient Information">
+                </form>
+            </th>        
+        </tr>
+        <tr>
+            <td>
+                Leverage the full application by going through the ingredient selection process and automatically returning Spoonacular recipes based on your list.
+            </td>
+            <td>
+                Start with a single ingredient from a list of categories present 
+                in The Flavor Bible and then select additional ingredients based 
+                on the strength of the pairings with your list.
+            </td>
+            <td>
+                Type in ingredients and desired number of results to leverage the Spoonacular API and search for recipes by their ingredients.
+            </td>
+            <td>
+                View a list of ingredient information from The Flavor Bible including attributes like Season, Taste, Function, Botanical relatives, Weight, Volume, Techniques, and Tips where available
+            </td>
+        </tr>
+    </table>
+</div>
 {% endblock %}
