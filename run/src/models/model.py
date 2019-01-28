@@ -34,26 +34,25 @@ def clear_results():
     full_selection = []
 
 def populate_full_selection():
-    """function to create a dictionary of all possible
+    """function to populate and sort a list of all possible
     children while avoiding duplicate 'search term' values
     """
-    # FIXME find a better way to do this
-    # FIXME docstring
     global full_selection_lookup
     full_selection_lookup = []
     for ing_list in full_selection:
         index_for_append = len(full_selection_lookup)
         full_selection_lookup.append([])
-        print(selected_ingredient_pks)
         for ing in ing_list:
             if ing.own_parent_pk not in selected_ingredient_pks:
                 weight = int(mean(ingredient_weightings[ing.own_parent_pk]))
-                full_selection_lookup[index_for_append].append(Ingredient(ing.pk, ing.name, ing.own_parent_pk, weight))
+                inst = Ingredient(ing.pk, ing.name, ing.own_parent_pk, weight)
+                full_selection_lookup[index_for_append].append(inst)
         for lists in full_selection_lookup:
             lists.sort(key=sort_funct, reverse=True)
 
 
 def sort_funct(val):
+    """sort function on pairing_str for populate_full_selection function"""
     return val.pairing_str
 
         

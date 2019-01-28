@@ -54,8 +54,13 @@ def ingredient_selection():
         return render_template('ingredient_selection.html',app_use=session['app_use'],ingred=ingred,num=session['num'], cur=cur)
     elif request.method == 'POST':
         if request.form['button'] == 'API Search':
-            session['api_ingred'] = get_selected_ingredient_list()
+            unparsed_ingred_list = get_selected_ingredient_list()
+            ingred_list = []
+            for item in unparsed_ingred_list:
+                ingred_list.append(item[1])
+            session['api_ingred'] = ingred_list
             session['num_results'] = 2
+            print(ingred_list)
             return redirect(url_for('main.search_results'))
         elif request.form['button'] == 'Back to Homepage':
             return redirect(url_for('main.frontpage'))
