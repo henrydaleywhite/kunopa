@@ -19,36 +19,50 @@
   font-size: 20px;
   width: 100%;
 }
+
+.center {
+    text-align: center;
+}
+
 </style>
 <form action="/ingredient_selection" method="post">
     <input name="button" type="submit" value="Back to Homepage">
 </form>
-<p>{{cur}}</p>
+{% for name in cur %}
+    {{cur[loop.index - 1][1].title()}}, 
+{% endfor %}
 <form action="/ingredient_selection" method="post">
     {% if app_use == "full" and num > 1 %}
         <input name="button" type="submit" value="API Search">
     {% endif %}
 </form>
-<p>Choose ingredient #{{num}}</p>
+<h1>Choose ingredient #{{num}}:</h1>
 <form action="/ingredient_selection" method="post">
-    <div class="grid-container" style="grid-auto-flow: row;">
-       {% if num > 1 %}
-            {% for key, value in ingred.items() %}
-                <div class="item{{key}}">
-                    <p>{{value[0].title()}}</p>
-                    <p>Pairing Strength: {{weights[value[1]]}}</p>
-                    <input name="button" type="submit" value="Choose {{key}}">
-                </div>
-            {% endfor %}
-        {% else %}
+    {% if num > 1 %}
+        {% for ing_list in ingred | reverse %}
+            <h2 class="center">Pairing Information for {{cur[-1 * (loop.index)][1].title()}}:</h2>
+            <div class="grid-container" style="grid-auto-flow: row;">
+                {% for child in ing_list %}
+                    <div class="item{{child.pk}}">
+                        <p>{{child.name.title()}}</p>
+                        <p>Pairing Strength: {{child.pairing_str}}</p>
+                        <input name="button" type="submit" value="Choose {{child.pk}}">
+                    </div>
+                {% endfor %}
+            </div>
+            <br>
+            <br>
+        {% endfor %}
+    {% else %}
+        <div class="grid-container" style="grid-auto-flow: row;">
             {% for ingredient in ingred %}
                 <div class="item{{ingredient.pk}}">
                     <p>{{ingredient.name.title()}}</p>
                     <input name="button" type="submit" value="Choose {{ingredient.pk}}">
                 </div>
-			{% endfor %}
-        {% endif %}
-    </div>
+            {% endfor %}
+        </div>
+    {% endif %}
 </form>
 
 {% endblock %}

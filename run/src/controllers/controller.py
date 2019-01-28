@@ -38,18 +38,20 @@ def ingredient_selection():
             else:
                 new_ingred_child = ChildIngredient(pk=session['pk'])
                 new_ingred = new_ingred_child.get_parent()
+            new_ingred_par_pk = new_ingred.pk
+            update_data_post_selection(new_ingred_par_pk)
             to_update = new_ingred.get_children()
-            populate_full_selection()
             new_ingred.update_weightings(to_update, session['num']-1)
+            populate_full_selection()
             cur = get_selected_ingredient_list()
-            weights = get_ingredient_weights()
+            # weights = get_ingredient_weights()
             ingred = get_available_ingredient_list()
         else:
             session['num'] = 1
             cur = []
             ingred = get_base_ingredient_list()
             weights = ''
-        return render_template('ingredient_selection.html',app_use=session['app_use'],ingred=ingred,num=session['num'], cur=cur, weights=weights)
+        return render_template('ingredient_selection.html',app_use=session['app_use'],ingred=ingred,num=session['num'], cur=cur)
     elif request.method == 'POST':
         if request.form['button'] == 'API Search':
             session['api_ingred'] = get_selected_ingredient_list()

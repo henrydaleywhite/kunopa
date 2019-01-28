@@ -1,4 +1,6 @@
 from statistics import mean
+from collections import namedtuple
+from pprint import pprint
 
 from .opencursor import OpenCursor
 
@@ -7,8 +9,13 @@ ingredient_weightings = {}
 selected_ingredient_pks = []
 api_input = []
 ingredient_number = 1
-full_selection_lookup = {}
+full_selection_lookup = []
 full_selection = []
+Ingredient = namedtuple('Ingredient', 
+                            ['pk',
+                            'name',
+                            'own_parent_pk',
+                            'pairing_str'])
 
 
 def clear_results():
@@ -23,7 +30,7 @@ def clear_results():
     selected_ingredient_pks = []
     api_input = []
     ingredient_number = 1
-    full_selection_lookup = {}
+    full_selection_lookup = []
     full_selection = []
 
 def populate_full_selection():
@@ -31,17 +38,24 @@ def populate_full_selection():
     children while avoiding duplicate 'search term' values
     """
     # FIXME find a better way to do this
-    with OpenCursor() as cur:
-        question_marks = '?' * len(full_selection)
-        SQL = """SELECT pk, name, own_parent_pk
-                FROM child_ingredients
-                WHERE pk IN ({}) 
-                GROUP BY search_term""".format(','.join(question_marks))
-        cur.execute(SQL, (full_selection))
-        rows = cur.fetchall()
-        for row in rows:
-            full_selection_lookup[row['pk']] = [row['name'], 
-                                                row['own_parent_pk']]
+    # FIXME docstring
+    global full_selection_lookup
+    full_selection_lookup = []
+    for ing_list in full_selection:
+        index_for_append = len(full_selection_lookup)
+        full_selection_lookup.append([])
+        print(selected_ingredient_pks)
+        for ing in ing_list:
+            if ing.own_parent_pk not in selected_ingredient_pks:
+                weight = int(mean(ingredient_weightings[ing.own_parent_pk]))
+                full_selection_lookup[index_for_append].append(Ingredient(ing.pk, ing.name, ing.own_parent_pk, weight))
+        for lists in full_selection_lookup:
+            lists.sort(key=sort_funct, reverse=True)
+
+
+def sort_funct(val):
+    return val.pairing_str
+
         
 
 def get_base_ingredient_list():
@@ -58,6 +72,7 @@ def get_base_ingredient_list():
 def get_ingredient_weights():
     """get the current list of ingredients/weights that can be selected"""
     # TODO change the name/docstring of this function
+    # FIXME refactoring replaces this
     display_dict = {}
     for key, value in ingredient_weightings.items():
         display_dict[key] = int(mean(value))
@@ -77,6 +92,17 @@ def increment_ingredient_number():
 def get_available_ingredient_list():
     """get the dict of child ingredients that can currently be selected"""
     return full_selection_lookup
+
+
+def update_data_post_selection(par_pk):
+    """given a ChildIngredient instance, moves ingredient from the
+    ingredient_weightings dictionary to the selected_ingredients list
+    """
+    try:
+        del ingredient_weightings[par_pk]
+        selected_ingredient_pks.append(par_pk)
+    except KeyError:
+        selected_ingredient_pks.append(par_pk)
 
 
 class ParentIngredient:
@@ -99,7 +125,7 @@ class ParentIngredient:
         else:
             self._set_from_row({})
         if api_input == []:
-                api_input.append(self.search_term)
+                api_input.append([self.pk, self.search_term])
 
 
     def _set_from_row(self, row):
@@ -121,8 +147,10 @@ class ParentIngredient:
             cur.execute(SQL, (self.pk,))
             rows = cur.fetchall()
             # maintain list of all available pks for future selections
+            next_selection_index = len(full_selection)
+            full_selection.append([])
             for row in rows:
-                full_selection.append(row['pk'])
+                full_selection[next_selection_index].append(ChildIngredient(row))
         return [ChildIngredient(row) for row in rows]
 
 
@@ -196,15 +224,6 @@ class ParentIngredient:
                 value.append(0)
 
 
-    def update_data_post_selection(self, child_instance):
-        """given a ChildIngredient instance, moves ingredient from the
-        ingredient_weightings dictionary to the selected_ingredients list
-        """
-        par_pk = child_instance.get_column_from_child('own_parent_pk')
-        del ingredient_weightings[par_pk]
-        selected_ingredient_pks.append(par_pk)
-
-
     def __bool__(self):
         return bool(self.pk)
 
@@ -270,7 +289,8 @@ class ChildIngredient:
         the list for the api call
         """
         api_search_term = self.get_column_from_child('search_term')
-        api_input.append(api_search_term)
+        api_search_pk = self.get_column_from_child('own_parent_pk')
+        api_input.append([api_search_pk, api_search_term])
         with OpenCursor() as cur:
             SQL = """ SELECT * from parent_ingredients WHERE pk = ?; """
             cur.execute(SQL, (self.own_parent_pk,))
