@@ -1,18 +1,46 @@
 {% extends "structure.html" %}
 
 {% block viewport %}
+<style>
+.button {
+    background-color: lightgrey;
+    border: 1px solid black;
+    color: black;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    width: 10%;
+}
+</style>
 <form action="/api_input" method="post">
     <input name="button" type="submit" value="Back to Homepage">
 </form>
+<h1>Input up to 5 ingredients and specify number of results</h1>
 <div>
     <form action="/api_input" method="post">
-        <input type="text" name="ing_1" placeholder="Input an ingredient...">
-        <input type="text" name="ing_2" placeholder="Input an ingredient...">
-        <input type="text" name="ing_3" placeholder="Input an ingredient...">
-        <input type="text" name="ing_4" placeholder="Input an ingredient...">
-        <input type="text" name="ing_5" placeholder="Input an ingredient...">
-        <input type="text" name="num_results" placeholder="Number of results to display...">
-        <input name="button" type="submit" value="Submit Ingredients">
+        <hr>
+        <h2>Ingredient #1</h2>
+        <p><input type="text" name="ing_1" placeholder="Input an ingredient..."></p>
+        <hr>
+        <h2>Ingredient #2</h2>
+        <p><input type="text" name="ing_2" placeholder="Input an ingredient..."></p>
+        <hr>
+        <h2>Ingredient #3</h2>
+        <p><input type="text" name="ing_3" placeholder="Input an ingredient..."></p>
+        <hr>
+        <h2>Ingredient #4</h2>
+        <p><input type="text" name="ing_4" placeholder="Input an ingredient..."></p>
+        <hr>
+        <h2>Ingredient #5</h2>
+        <p><input type="text" name="ing_5" placeholder="Input an ingredient..."></p>
+        <hr>
+        <h2>Number of displayed search results</h2>
+        <p><input type="text" name="num_results" placeholder="Number of results..."></p>
+        <hr>
+        <p><input name="button" class="button" type="submit" value="Submit Ingredients"></p>
     </form>
 </div>
 

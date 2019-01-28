@@ -4,10 +4,12 @@
 <style>
 .grid-container {
   display: grid;
-  grid-template-columns: 24% 24% 24% 24%;
+  grid-template-columns: 16.5% 16.5% 16.5% 16.5% 16.5% 16.5%;
   grid-template-rows: auto;
-  grid-gap: 5px;
+  grid-gap: 1px;
+  margin-left: 1.25%;
   background-color: beige;
+  float: center;
 }
 
 .grid-container > div {
@@ -19,26 +21,70 @@
   padding-right: 0px;
   font-size: 20px;
   width: 100%;
-  outline: 5px solid black;
+  outline: 1px solid black;
+  float: center;
 }
 
 .center {
     text-align: center;
 }
 
+.button {
+    background-color: lightgrey;
+    border: 1px solid black;
+    color: black;
+    padding: 15px 0px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    cursor: pointer;
+    width: 8%;
+    position: absolute;
+    right: 10px;
+    top: 5px;
+}
+
+.button2 {
+    background-color: lightgrey;
+    border: 1px solid black;
+    color: black;
+    padding: 15px 0px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    cursor: pointer;
+    width: 8%;
+    position: absolute;
+    left: 10px;
+    top: 5px;
+}
+
 </style>
-<form action="/ingredient_selection" method="post">
-    <input name="button" type="submit" value="Back to Homepage">
-</form>
-{% for name in cur %}
-    {{cur[loop.index - 1][1].title()}}, 
-{% endfor %}
-<form action="/ingredient_selection" method="post">
-    {% if app_use == "full" and num > 1 %}
-        <input name="button" type="submit" value="API Search">
-    {% endif %}
-</form>
-<h1>Choose ingredient #{{num}}:</h1>
+<div>
+    <br>
+    <br>
+    <form action="/ingredient_selection" method="post">
+        <input name="button" class="button" type="submit" value="Back to Homepage">
+    </form>
+    <form action="/ingredient_selection" method="post">
+        {% if app_use == "full" and num > 1 %}
+            <input name="button" class="button2"  type="submit" value="API Search">
+        {% endif %}
+    </form>
+    <h2 class="center">
+        {% if num > 1 %}
+            Current Ingredient List: 
+            {% for name in cur %}
+                {{cur[loop.index - 1][1].title()}}, 
+            {% endfor %}
+        {% endif %}
+    </h2>
+</div>
+<div>
+    <h1>Choose ingredient #{{num}}:</h1>
+</div>
 <form action="/ingredient_selection" method="post">
     {% if num > 1 %}
         {% for ing_list in ingred | reverse %}
@@ -46,8 +92,8 @@
             <div class="grid-container" style="grid-auto-flow: row;">
                 {% for child in ing_list %}
                     <div class="item{{child.pk}}">
-                        <p>{{child.name.title()}}</p>
-                        <p>Pairing Strength: {{child.pairing_str}}</p>
+                        <h3>{{child.name.title()}}</h3>
+                        <p>Pairing Score: </p><h3>{{child.pairing_str}}</h3>
                         <input name="button" type="submit" value="Choose {{child.pk}}">
                     </div>
                 {% endfor %}
