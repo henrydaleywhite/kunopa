@@ -1,6 +1,25 @@
 {% extends "structure.html" %}
 
 {% block viewport %}
+<style>
+.grid-container {
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  grid-template-rows: auto 20%;
+  /* grid: 200px / auto auto auto auto auto; */
+  grid-gap: 5px;
+  background-color:black;
+  padding: 5px;
+}
+
+.grid-container > div {
+  background-color: beige;
+  text-align: center;
+  padding: 10px 0;
+  font-size: 20px;
+  width: 100%;
+}
+</style>
 <form action="/ingredient_selection" method="post">
     <input name="button" type="submit" value="Back to Homepage">
 </form>
@@ -11,24 +30,25 @@
     {% endif %}
 </form>
 <p>Choose ingredient #{{num}}</p>
-<p>---------------------------------------------------------------------------</p>
-<div>
-    <form action="/ingredient_selection" method="post">
-        {% if num > 1 %}
+<form action="/ingredient_selection" method="post">
+    <div class="grid-container" style="grid-auto-flow: row;">
+       {% if num > 1 %}
             {% for key, value in ingred.items() %}
-                <p>{{value[0]}}</p>
-                <p>Pairing Strength: {{weights[value[1]]}}</p>
-                
-                <input name="button" type="submit" value="Choose {{key}}">
-                <p>---------------------------------------------------------------------------</p>
+                <div class="item{{key}}">
+                    <p>{{value[0].title()}}</p>
+                    <p>Pairing Strength: {{weights[value[1]]}}</p>
+                    <input name="button" type="submit" value="Choose {{key}}">
+                </div>
             {% endfor %}
         {% else %}
             {% for ingredient in ingred %}
-				<p>{{ingredient.name}}</p>
-				<input name="button" type="submit" value="Choose {{ingredient.pk}}">
-				<p>---------------------------------------------------------------------------</p>
+                <div class="item{{ingredient.pk}}">
+                    <p>{{ingredient.name.title()}}</p>
+                    <input name="button" type="submit" value="Choose {{ingredient.pk}}">
+                </div>
 			{% endfor %}
         {% endif %}
-    </form>
-</div>
+    </div>
+</form>
+
 {% endblock %}
