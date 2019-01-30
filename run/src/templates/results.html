@@ -1,14 +1,53 @@
 {% extends "structure.html" %}
 
 {% block viewport %}
+<style>
+table {
+    border-collapse: collapse;
+}
+
+table, td, th {
+    border: 1px solid black;
+}
+
+.recipe {
+    margin-left:0px; 
+    position:relative;
+    width:70%;
+    text-align: left;
+    /* margin-bottom: 10%; */
+}
+</style>
 <div>
     <form action="/results" method="post">
         <input name="button" type="submit" value="Back to Homepage">
     </form>
-    <p>---------------------------------------------------------------------------</p>
-        {% for item in result %}
-            <p>{{item}}</p>
-            <p>---------------------------------------------------------------------------</p>
+    {% for key, value in result.items() %}
+        <div class="recipe">
+            <h2><a href="{{ value['url'] }}">{{ value['name'] }}</a></h2>
+            <p><img src="{{ value['image'] }}" alt="RIP"></p>
+        </div>
+        
+        <div id="contentBox" style="left:0px; width:70%; position:static;">
+            <div id="column1" style="position:relative; float:left; margin:0; width:33%; margin-bottom: 10%">
+                <h3>Used</h3>
+                {% for ing in value['used'] %}
+                    <p>{{ing['name'].title()}}</p>
+                {% endfor %}
+            </div>
+            <div id="column2" style="position:relative; float:left; margin:0;width:33%; margin-bottom: 10%">
+                <h3>Unused</h3>
+                {% for ing in value['unused'] %}
+                    <p>{{ing['name'].title()}}</p>
+                {% endfor %}
+            </div>
+            <div id="column3" style="position:relative; float:left; margin:0;width:33%; margin-bottom: 10%">
+                <h3>Extra</h3>
+                {% for ing in value['extra'] %}
+                    <p>{{ing['name'].title()}}</p>
+                {% endfor %}
+            </div>
+        </div>
     {% endfor %}
 </div>
 {% endblock %}

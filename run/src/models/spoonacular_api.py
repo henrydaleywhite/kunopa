@@ -5,7 +5,7 @@ from pprint import pprint
 
 filename = "spoonacular_key.txt"
 test_ing_list = "apples%2Cflour%2Csugar"
-test_list = ['sugar', 'flour', 'apples']
+test_list = ['basil', 'garlic', 'tomato', 'olive oil', 'pasta', 'thyme', 'parsley', 'lemon', 'rosemary']
 
 def get_api_key(filename):
     """get the api key from a seperately stored file. 
@@ -52,24 +52,39 @@ def write_file(filename, dictionary):
     with open(filename, 'w') as open_file:
         json.dump(dictionary, open_file)
 
-
-def api_call_test(api_key, ing_list, num_results):
-    """return a dictionary result based on an api call with dynamic
-    values for the ingredient list and number of results to display
+def parse_call_results(response_list):
+    """take the results of the api_call and return a dictionary
+    with the id, url, and used/missed/extra ingredients
     """
-    stc_1 = "https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/"
-    stc_2 = "recipes/findByIngredients?fillIngredients=true&ingredients="
-    stc_3 = "&limitLicense=false&number="
-    stc_4 = "&ranking=1"
-    response = f"{stc_1}{stc_2}{ing_list}{stc_3}{num_results}{stc_4}"
-    print(response)
+    return_dict = {}
+    for recipe in response_list:
+        used = recipe['usedIngredients']
+        unused = recipe['unusedIngredients']
+        extra = recipe['missedIngredients']
+        image = recipe['image']
+        name = recipe['title']
+        url_pt1 = "https://spoonacular.com/"
+        recipe_id = recipe['id']
+        url_pt3 = recipe['title'].lower().replace(' ','-')
+        url = url_pt1 + url_pt3 + '-' + str(recipe_id)
+        return_dict[recipe_id] = {'url': url, 'used': used, 
+                                'image': image, 'name': name,
+                                'unused': unused, 'extra': extra}
+    return return_dict
 
+# response = requests.get("https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/recipes/529503/information?includeNutrition=false",
+#   headers={
+#     "X-Mashape-Key": "DmlB2lXUyvmshaqU6dBOJ637neXBp1wAUyYjsn4NdYKNaIr1IA",
+#     "Accept": "application/json"
+#   }
+# )
 
 if __name__ == "__main__":
     ingredient_list = format_ingred_list(test_list)
     api_key = get_api_key(filename)
-    response_to_write = api_call(api_key, ingredient_list, 2)
-    write_file('api_call.json', response_to_write)
+    response = api_call(api_key, ingredient_list, 2)
+    response_to_write = parse_call_results(response)
+    write_file('return_dict.json', response_to_write)
     # ingredient_list = format_ingred_list(test_list)
     # api_key = get_api_key(filename)
     # response_to_write = api_call_test(api_key, ingredient_list, 2)

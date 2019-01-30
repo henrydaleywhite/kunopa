@@ -107,14 +107,9 @@ def search_results():
         ingredients = session['api_ingred']
         num_results = session['num_results']
         results_list = api_call(api_key, ingredients, num_results)
-        print(results_list)
-        return render_template('results.html', result=results_list)
-        # TODO parse resulting json to work with JINJA in an html file
-        # return "endpoint"
-        # print_str = ""
-        # for element in session['api_ingred']:
-        #     print_str += element + ", "
-        # return print_str
+        result = parse_call_results(results_list)
+        print(result)
+        return render_template('results.html', result=result, ingredients=ingredients)
     else:
         if request.form['button'] == 'Back to Homepage':
             return redirect(url_for('main.frontpage'))
