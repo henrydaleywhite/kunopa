@@ -1,7 +1,9 @@
-{% extends "structure.html" %}
-
-{% block viewport %}
 <style>
+body {
+    /* background-repeat: no-repeat; */
+    background-size: 100%;
+    background-image: url({{ url_for('static', filename='select-bg.png') }});
+}
 div.title {
     text-align: center;
     position: fixed;
@@ -29,14 +31,14 @@ div.title {
   margin-left: 1.25%;
   margin-right: 1.25%;
   margin-top: 10%;
-  background-color: beige;
+  /* background-color: beige; */
   float: center;
   /* top: 20%; */
   position: relative;
 }
 
 .grid-container > div {
-  background-color: beige;
+  /* background-color: beige; */
   text-align: center;
   padding-top: 10px;
   padding-bottom: 10px;
@@ -144,63 +146,64 @@ div.title {
 }
 
 </style>
-<div class="title">
-    <img type="image" src="{{ url_for('static', filename='addingred_new.png') }}" alt="Header" style="max-width: 70%; max-height:auto">
-</div>
-<div>
-    <form action="/ingredient_selection" method="post">
-        <input name="button" class="button" type="submit" value="Back to Homepage">
-    </form>
-    <form action="/ingredient_selection" method="post">
-        {% if app_use == "full" and num > 1 %}
-            <input name="button" class="button2"  type="submit" value="API Search">
-        {% endif %}
-    </form>
-</div>
-<!-- <div>
-    <h1 class="ingred_number">Choose ingredient #{{num}}:</h1>
-</div> -->
-<div>
-    <h2 class="left_list_container">
-        {% if num > 1 %}
-        <div class="imgbox">
-                <img class="center-fit" type="image" src="{{ url_for('static', filename='ingredient_list.png') }}" alt="Header" style="height: auto; width:77%">
-            </div>
-        <!-- <p>Ingredient List</p> -->
-            <div class="left_inside"><br><br><br>{% for name in cur %}
-                <p class="test">{{loop.index}} - {{cur[loop.index - 1][1].title()}}</p>
-            {% endfor %}
-            </div>
-        {% endif %}
-    </h2>
-    <form action="/ingredient_selection" method="post">
-        {% if num > 1 %}
-        <br><br><br>
-        <br><br><br>
-        <br><br><br>
-        <br><br>
-        {% for ing_list in ingred | reverse %}
-            <h2>
-                <h2 class="right_list">{{cur[-1 * (loop.index)][1].title()}} Scores-Ingredients:</h2>
-                    <div class="right_list">    
-                        {% for child in ing_list %}
-                            <h3>{{child.pairing_str}} - {{child.name.title()}} <input name="button" type="submit" value="Choose {{child.pk}}"></h3>
-                        {% endfor %}
-                    </div>
-                <br>
-                <br>
-            {% endfor %}
-        </h2>
-        {% else %}
-            <div class="grid-container" style="grid-auto-flow: row;">
-                {% for ingredient in ingred %}
-                    <div class="item{{ingredient.pk}}">
-                        <p>{{ingredient.name.title()}}</p>
-                        <input name="button" type="submit" value="Choose {{ingredient.pk}}">
-                    </div>
+<body>
+    <div class="title">
+        <img type="image" src="{{ url_for('static', filename='addingred_new.png') }}" alt="Header" style="max-width: 70%; max-height:auto">
+    </div>
+    <div>
+        <form action="/ingredient_selection" method="post">
+            <input name="button" class="button" type="submit" value="Back to Homepage">
+        </form>
+        <form action="/ingredient_selection" method="post">
+            {% if app_use == "full" and num > 1 %}
+                <input name="button" class="button2"  type="submit" value="API Search">
+            {% endif %}
+        </form>
+    </div>
+    <!-- <div>
+        <h1 class="ingred_number">Choose ingredient #{{num}}:</h1>
+    </div> -->
+    <div>
+        <h2 class="left_list_container">
+            {% if num > 1 %}
+            <div class="imgbox">
+                    <img class="center-fit" type="image" src="{{ url_for('static', filename='ingredient_list.png') }}" alt="Header" style="height: auto; width:77%">
+                </div>
+            <!-- <p>Ingredient List</p> -->
+                <div class="left_inside"><br><br><br>{% for name in cur %}
+                    <p class="test">{{loop.index}} - {{cur[loop.index - 1][1].title()}}</p>
                 {% endfor %}
-            </div>
-        {% endif %}
-    </form>
-</div>
-{% endblock %}
+                </div>
+            {% endif %}
+        </h2>
+        <form action="/ingredient_selection" method="post">
+            {% if num > 1 %}
+            <br><br><br>
+            <br><br><br>
+            <br><br><br>
+            <br><br>
+            {% for ing_list in ingred | reverse %}
+                <h2>
+                    <h2 class="right_list">{{cur[-1 * (loop.index)][1].title()}} Scores-Ingredients:</h2>
+                        <div class="right_list">    
+                            {% for child in ing_list %}
+                                <h3>{{child.pairing_str}} - {{child.name.title()}} <input name="button" type="submit" value="Choose {{child.pk}}"></h3>
+                            {% endfor %}
+                        </div>
+                    <br>
+                    <br>
+                {% endfor %}
+            </h2>
+            {% else %}
+                <div class="grid-container" style="grid-auto-flow: row;">
+                    {% for ingredient in ingred %}
+                        <div class="item{{ingredient.pk}}">
+                            <p>{{ingredient.name.title()}}</p>
+                            <input name="button" type="submit" value="Choose {{ingredient.pk}}">
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </form>
+    </div>
+</body>

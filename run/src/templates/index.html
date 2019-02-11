@@ -1,8 +1,9 @@
-{% extends "structure.html" %}
-
-{% block viewport %}
-
 <style>
+body {
+    background-repeat: no-repeat;
+    background-size: 100%;
+    background-image: url({{ url_for('static', filename='main-bg.png') }});
+}
 div.title {
     text-align: center;
     margin-top: 150px;
@@ -10,10 +11,12 @@ div.title {
     float: center
 }
 table, th, td {
-    margin: 0px auto;
+    margin: 17% auto;
     width: 60%;
-    border-collapse: collapse;
-    border-style: hidden;
+    /* border-collapse: collapse; */
+    /* border-style: ; */
+    border: 3px #3B3B33;
+    background-color: E6DEDE;
 }
 th {
     text-align: center;
@@ -25,6 +28,7 @@ td {
     width: 25%;
     text-align: center;
     font: 15px arial, sans-serif;
+    color: 3B3B33;
 }
 .button {
     background-color: #4CAF50; /* Green */
@@ -42,9 +46,9 @@ h1 {
     font-size: 50px;
 }
 </style>
-<div class="title">
+<!-- <div class="title">
     <img type="image" src="{{ url_for('static', filename='foodbox.png') }}" alt="Header" style="max-width: 60%; max-height:auto">
-</div>
+</div> -->
 <div>
     <table> 
         <tr>
@@ -87,4 +91,3 @@ h1 {
         </tr>
     </table>
 </div>
-{% endblock %}
